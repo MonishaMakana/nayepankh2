@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports - Nayepankh Volunteer System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="mb-0">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Volunteer Reports
+                </h1>
+                <p class="text-muted">Comprehensive statistics and analytics</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ total_volunteers }}</div>
+                    <h4>Total Volunteers</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ active_volunteers }}</div>
+                    <h4>Active</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ pending_volunteers }}</div>
+                    <h4>Pending</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ total_hours|floatformat:0 }}</div>
+                    <h4>Total Hours</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Skills Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            {% for skill, count in skills_distribution.items %}
+                                <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                                    <span>{{ skill }}</span>
+                                    <div>
+                                        <div class="progress" style="width: 150px; height: 20px;">
+                                            <div class="progress-bar" role="progressbar"
+                                                 style="width: {% widthratio count total_volunteers 100 %}%;"
+                                                 aria-valuenow="{{ count }}" aria-valuemin="0" aria-valuemax="{{ total_volunteers }}">
+                                                {{ count }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">No skills data available</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-trophy"></i> Top Volunteers</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if top_volunteers %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Name</th>
+                                            <th>Hours</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for volunteer in top_volunteers %}
+                                            <tr>
+                                                <td><strong>#{{ forloop.counter }}</strong></td>
+                                                <td>{{ volunteer.name }}</td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ volunteer.hours_contributed }} hrs</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No volunteers with hours yet</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-download"></i> Export Data</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-3">Download reports in different formats for further analysis:</p>
+                        <a href="{% url 'export_csv' %}" class="btn btn-outline-success me-2">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV
+                        </a>
+                        <a href="{% url 'export_json' %}" class="btn btn-outline-info">
+                            <i class="bi bi-file-code"></i> Export as JSON
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">Report Generated: {{ now|date:"M d, Y H:i" }}</h6>
+                        <p class="text-muted mb-0">This report provides comprehensive statistics about our volunteer program.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

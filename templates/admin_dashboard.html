@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Nayepankh Volunteer System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1 class="mb-0">
+                    <i class="bi bi-speedometer2"></i> Admin Dashboard
+                </h1>
+                <p class="text-muted">Welcome back, Admin! Manage volunteers and generate reports.</p>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.total }}</div>
+                    <h4>Total Volunteers</h4>
+                    <p class="text-muted">All registered volunteers</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.pending }}</div>
+                    <h4>Pending Approval</h4>
+                    <p class="text-warning">Waiting for review</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.active }}</div>
+                    <h4>Active Volunteers</h4>
+                    <p class="text-success">Currently active</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.total_hours|floatformat:0 }}</div>
+                    <h4>Total Hours</h4>
+                    <p class="text-muted">Hours contributed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-exclamation-circle"></i> Pending Approvals</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if pending_volunteers %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Skills</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for volunteer in pending_volunteers|slice:":5" %}
+                                            <tr>
+                                                <td>{{ volunteer.name }}</td>
+                                                <td>{{ volunteer.email }}</td>
+                                                <td><span class="badge bg-secondary">{{ volunteer.get_skills_display }}</span></td>
+                                                <td>
+                                                    <a href="{% url 'volunteer_list_admin' %}" class="btn btn-sm btn-outline-primary">Review</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <a href="{% url 'volunteer_list_admin' %}?status=pending" class="btn btn-sm btn-primary">View All</a>
+                        {% else %}
+                            <p class="text-muted mb-0">No pending approvals</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-check-circle"></i> Active Volunteers</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if active_volunteers %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Hours</th>
+                                            <th>Last Activity</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for volunteer in active_volunteers|slice:":5" %}
+                                            <tr>
+                                                <td>{{ volunteer.name }}</td>
+                                                <td>{{ volunteer.hours_contributed }}</td>
+                                                <td>{{ volunteer.last_activity_date|date:"M d" }}</td>
+                                                <td>
+                                                    <a href="{% url 'update_hours' volunteer.id %}" class="btn btn-sm btn-outline-success">Update</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <a href="{% url 'volunteer_list_admin' %}?status=active" class="btn btn-sm btn-success">View All</a>
+                        {% else %}
+                            <p class="text-muted mb-0">No active volunteers</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-tools"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'volunteer_list_admin' %}" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-list"></i> Manage Volunteers
+                        </a>
+                        <a href="{% url 'generate_reports' %}" class="btn btn-outline-info me-2">
+                            <i class="bi bi-file-earmark-bar-graph"></i> View Reports
+                        </a>
+                        <a href="{% url 'export_csv' %}" class="btn btn-outline-success me-2">
+                            <i class="bi bi-download"></i> Export as CSV
+                        </a>
+                        <a href="/admin/" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-gear"></i> Django Admin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

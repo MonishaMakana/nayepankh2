@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Nayepankh Volunteer System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <h1 class="display-4 fw-bold mb-3">Welcome to Nayepankh</h1>
+            <p class="lead mb-4">Join our community of passionate volunteers making a difference in society. Register today and start your journey with us!</p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-2">
+                    <i class="bi bi-person-plus"></i> Register as Volunteer
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            {% else %}
+                {% if user.is_staff %}
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                </a>
+                {% else %}
+                <a href="{% url 'volunteer_profile' volunteer.id %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-person-check"></i> View My Profile
+                </a>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Stats</h5>
+                    <p class="card-text">
+                        <strong>{{ total_volunteers }}</strong> Total Volunteers<br>
+                        <strong>{{ active_volunteers }}</strong> Active Volunteers<br>
+                        <strong>{{ total_hours|floatformat:0 }}</strong> Hours Contributed
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_volunteers }}</div>
+                <h4>Total Volunteers</h4>
+                <p class="text-muted">Registered volunteers</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ active_volunteers }}</div>
+                <h4>Active Volunteers</h4>
+                <p class="text-muted">Currently volunteering</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_hours|floatformat:0 }}</div>
+                <h4>Hours Contributed</h4>
+                <p class="text-muted">Total volunteer hours</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-value">10+</div>
+                <h4>Initiatives</h4>
+                <p class="text-muted">Active projects</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-heart" style="font-size: 3rem; color: #e74c3c;"></i>
+                    <h5 class="card-title mt-3">Make an Impact</h5>
+                    <p class="card-text">Your volunteering efforts create meaningful change in our communities.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-people" style="font-size: 3rem; color: #3498db;"></i>
+                    <h5 class="card-title mt-3">Join Our Community</h5>
+                    <p class="card-text">Connect with thousands of volunteers sharing the same passion.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-star" style="font-size: 3rem; color: #f39c12;"></i>
+                    <h5 class="card-title mt-3">Grow & Learn</h5>
+                    <p class="card-text">Develop new skills and experience while helping others.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-body i {
+        transition: transform 0.3s;
+    }
+    .card:hover i {
+        transform: scale(1.2);
+    }
+</style>
+{% endblock %}

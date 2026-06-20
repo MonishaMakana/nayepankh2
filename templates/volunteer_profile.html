@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ volunteer.name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-0">{{ volunteer.name }}</h1>
+            <p class="text-muted">Volunteer Profile</p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if user.email == volunteer.email or user.is_staff %}
+                <a href="{% url 'volunteer_edit' volunteer.id %}" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil"></i> Edit Profile
+                </a>
+            {% endif %}
+            {% if user.is_staff %}
+                <a href="{% url 'volunteer_list_admin' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            {% else %}
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="text-muted">Email</p>
+                            <p><strong>{{ volunteer.email }}</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted">Phone</p>
+                            <p><strong>{{ volunteer.phone }}</strong></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <p class="text-muted">Address</p>
+                            <p><strong>{{ volunteer.address }}</strong></p>
+                        </div>
+                    </div>
+                    {% if volunteer.bio %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p class="text-muted">About</p>
+                                <p>{{ volunteer.bio }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-briefcase"></i> Volunteering Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="text-muted">Skills/Interests</p>
+                            <p><span class="badge bg-primary">{{ volunteer.get_skills_display }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted">Availability</p>
+                            <p>{{ volunteer.get_availability_display }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="text-muted">Registration Date</p>
+                            <p>{{ volunteer.registration_date|date:"M d, Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted">Status</p>
+                            <p>
+                                {% if volunteer.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending Approval</span>
+                                {% elif volunteer.status == 'active' %}
+                                    <span class="badge bg-success">Active</span>
+                                {% elif volunteer.status == 'inactive' %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h2 class="text-primary">{{ volunteer.hours_contributed }}</h2>
+                    <p class="text-muted">Hours Contributed</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if activity_logs %}
+                        <div class="activity-feed">
+                            {% for log in activity_logs %}
+                                <div class="mb-3 pb-3 border-bottom" style="display: flex; gap: 10px;">
+                                    <div>
+                                        <i class="bi bi-dot" style="color: #3498db;"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-1">
+                                            <strong>{{ log.get_activity_type_display }}</strong>
+                                        </p>
+                                        <p class="text-muted small mb-0">{{ log.created_at|date:"M d, Y H:i" }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No activity yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.is_staff and volunteer.status == 'pending' %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Approval</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'approve_volunteer' volunteer.id %}">
+                            {% csrf_token %}
+                            <button type="submit" name="action" value="approve" class="btn btn-success w-100 mb-2">
+                                <i class="bi bi-check-circle"></i> Approve
+                            </button>
+                            <button type="submit" name="action" value="reject" class="btn btn-danger w-100">
+                                <i class="bi bi-x-circle"></i> Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
